@@ -19,4 +19,6 @@ public interface BookService {
     AuthorDto[] findBookAuthors(String isbn);
 
     String[] findPublishersByAuthor(String author);
+
+    AuthorDto removeAuthor(String author);
 }
