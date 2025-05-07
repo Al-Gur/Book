@@ -9,6 +9,7 @@ import telran.java57.bookpostgresql.dao.BookRepository;
 import telran.java57.bookpostgresql.dao.PublisherRepository;
 import telran.java57.bookpostgresql.dto.AuthorDto;
 import telran.java57.bookpostgresql.dto.BookDto;
+import telran.java57.bookpostgresql.dto.exceptions.NotFoundException;
 import telran.java57.bookpostgresql.model.Author;
 import telran.java57.bookpostgresql.model.Book;
 import telran.java57.bookpostgresql.model.Publisher;
@@ -47,7 +48,8 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
 
     @Override
     public BookDto findBookByIsbn(String isbn) {
-        return null;
+        Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
+        return new BookDto(book);
     }
 
     @Override
