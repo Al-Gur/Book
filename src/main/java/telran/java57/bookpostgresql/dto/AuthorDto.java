@@ -11,7 +11,7 @@ public class AuthorDto {
     LocalDate birthDate;
 
     public AuthorDto(Author author) {
-        name=author.getName();
-        birthDate=author.getBirthDate();
+        name = author.getName();
+        birthDate = author.getBirthDate();
     }
 }
