@@ -16,6 +16,7 @@ import telran.java57.bookpostgresql.model.Publisher;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -111,6 +112,18 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
                 .map(Publisher::getPublisherName)
                 .distinct()
                 .toArray(String[]::new);
+    }
+
+    @Override
+    public AuthorDto removeAuthor(String author) {
+        Author author1 = authorRepository.findById(author).orElseThrow(NotFoundException::new);
+        List<Book> books = bookRepository.findAll().stream()
+                .filter(book -> book.getAuthors().stream()
+                        .anyMatch(author2 -> author2.getName().equals(author)))
+                .toList();
+        books.forEach(book -> bookRepository.deleteById(book.getIsbn()));
+        authorRepository.deleteById(author);
+        return modelMapper.map(author1, AuthorDto.class);
     }
 
     @Override
