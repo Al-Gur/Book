@@ -15,6 +15,7 @@ import telran.java57.bookpostgresql.model.Book;
 import telran.java57.bookpostgresql.model.Publisher;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,6 +27,17 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
     final AuthorRepository authorRepository;
     final PublisherRepository publisherRepository;
     final ModelMapper modelMapper;
+
+    public BookDto newBookDto(Book book) {
+        BookDto bookDto = new BookDto();
+        bookDto.setIsbn(book.getIsbn());
+        bookDto.setTitle(book.getTitle());
+        Set<AuthorDto> authorDtos = new HashSet<>();
+        book.getAuthors().forEach(author -> authorDtos.add(modelMapper.map(author, AuthorDto.class)));
+        bookDto.setAuthors(authorDtos);
+        bookDto.setPublisher(book.getPublisher().getPublisherName());
+        return bookDto;
+    }
 
     @Override
     public Boolean addBook(BookDto bookDto) {
@@ -49,17 +61,22 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
     @Override
     public BookDto findBookByIsbn(String isbn) {
         Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
-        return new BookDto(book);
+        return newBookDto(book);
     }
 
     @Override
     public BookDto removeBook(String isbn) {
-        return null;
+        Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
+        bookRepository.deleteById(isbn);
+        return newBookDto(book);
     }
 
     @Override
     public BookDto updateBookTitle(String isbn, String newTitle) {
-        return null;
+        Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
+        book.setTitle(newTitle);
+        bookRepository.save(book);
+        return newBookDto(book);
     }
 
     @Override
@@ -74,7 +91,16 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
 
     @Override
     public AuthorDto[] findBookAuthors(String isbn) {
-        return new AuthorDto[0];
+        Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
+        ArrayList<AuthorDto> authors = new ArrayList<>(
+                book.getAuthors().stream()
+                .map(author -> modelMapper.map(author, AuthorDto.class))
+                .toList());
+        AuthorDto[] res = new AuthorDto[authors.size()];
+        for (int i = 0; i < res.length; i++) {
+            res[i] = authors.get(i);
+        }
+        return res;
     }
 
     @Override

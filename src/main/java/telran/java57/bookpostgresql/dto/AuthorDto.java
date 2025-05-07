@@ -9,9 +9,4 @@ import java.time.LocalDate;
 public class AuthorDto {
     String name;
     LocalDate birthDate;
-
-    public AuthorDto(Author author) {
-        name = author.getName();
-        birthDate = author.getBirthDate();
-    }
 }
