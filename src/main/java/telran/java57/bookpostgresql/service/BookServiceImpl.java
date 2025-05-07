@@ -92,15 +92,9 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
     @Override
     public AuthorDto[] findBookAuthors(String isbn) {
         Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
-        ArrayList<AuthorDto> authors = new ArrayList<>(
-                book.getAuthors().stream()
+        return book.getAuthors().stream()
                 .map(author -> modelMapper.map(author, AuthorDto.class))
-                .toList());
-        AuthorDto[] res = new AuthorDto[authors.size()];
-        for (int i = 0; i < res.length; i++) {
-            res[i] = authors.get(i);
-        }
-        return res;
+                .toArray(AuthorDto[]::new);
     }
 
     @Override
