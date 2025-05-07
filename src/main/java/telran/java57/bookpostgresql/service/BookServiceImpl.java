@@ -15,7 +15,6 @@ import telran.java57.bookpostgresql.model.Book;
 import telran.java57.bookpostgresql.model.Publisher;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,12 +80,18 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
 
     @Override
     public BookDto[] findBooksByAuthor(String author) {
-        return new BookDto[0];
+        return bookRepository.findAll().stream()
+                .filter(book -> book.getAuthors().stream()
+                        .anyMatch(author1 -> author1.getName().equals(author)))
+                .map(this::newBookDto)
+                .toArray(BookDto[]::new);
     }
 
     @Override
     public BookDto[] findBooksByPublisher(String publisher) {
-        return new BookDto[0];
+        return bookRepository.findBooksByPublisher_PublisherName(publisher).stream()
+                .map(this::newBookDto)
+                .toArray(BookDto[]::new);
     }
 
     @Override
@@ -99,7 +104,13 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
 
     @Override
     public String[] findPublishersByAuthor(String author) {
-        return new String[0];
+        return bookRepository.findAll().stream()
+                .filter(book -> book.getAuthors().stream()
+                        .anyMatch(author1 -> author1.getName().equals(author)))
+                .map(Book::getPublisher)
+                .map(Publisher::getPublisherName)
+                .distinct()
+                .toArray(String[]::new);
     }
 
     @Override
