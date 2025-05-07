@@ -14,4 +14,12 @@ public class BookDto {
     String title;
     Set<AuthorDto> authors;
     String publisher;
+
+    public BookDto(Book book){
+        isbn=book.getIsbn();
+        title=book.getTitle();
+        authors=new HashSet<>();
+        book.getAuthors().forEach(author -> authors.add(new AuthorDto(author)));
+        publisher=book.getPublisher().getPublisherName();
+    }
 }

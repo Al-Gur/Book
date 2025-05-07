@@ -28,16 +28,16 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
     final PublisherRepository publisherRepository;
     final ModelMapper modelMapper;
 
-    public BookDto newBookDto(Book book) {
-        BookDto bookDto = new BookDto();
-        bookDto.setIsbn(book.getIsbn());
-        bookDto.setTitle(book.getTitle());
-        Set<AuthorDto> authorDtos = new HashSet<>();
-        book.getAuthors().forEach(author -> authorDtos.add(modelMapper.map(author, AuthorDto.class)));
-        bookDto.setAuthors(authorDtos);
-        bookDto.setPublisher(book.getPublisher().getPublisherName());
-        return bookDto;
-    }
+//    public BookDto newBookDto(Book book) {
+//        BookDto bookDto = new BookDto();
+//        bookDto.setIsbn(book.getIsbn());
+//        bookDto.setTitle(book.getTitle());
+//        Set<AuthorDto> authorDtos = new HashSet<>();
+//        book.getAuthors().forEach(author -> authorDtos.add(modelMapper.map(author, AuthorDto.class)));
+//        bookDto.setAuthors(authorDtos);
+//        bookDto.setPublisher(book.getPublisher().getPublisherName());
+//        return bookDto;
+//    }
 
     @Override
     public Boolean addBook(BookDto bookDto) {
@@ -61,14 +61,14 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
     @Override
     public BookDto findBookByIsbn(String isbn) {
         Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
-        return newBookDto(book);
+        return new BookDto(book);
     }
 
     @Override
     public BookDto removeBook(String isbn) {
         Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
         bookRepository.deleteById(isbn);
-        return newBookDto(book);
+        return new BookDto(book);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
         Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
         book.setTitle(newTitle);
         bookRepository.save(book);
-        return newBookDto(book);
+        return new BookDto(book);
     }
 
     @Override
@@ -84,14 +84,14 @@ public class BookServiceImpl implements BookService, CommandLineRunner {
         return bookRepository.findAll().stream()
                 .filter(book -> book.getAuthors().stream()
                         .anyMatch(author1 -> author1.getName().equals(author)))
-                .map(this::newBookDto)
+                .map(BookDto::new)
                 .toArray(BookDto[]::new);
     }
 
     @Override
     public BookDto[] findBooksByPublisher(String publisher) {
         return bookRepository.findBooksByPublisher_PublisherName(publisher).stream()
-                .map(this::newBookDto)
+                .map(BookDto::new)
                 .toArray(BookDto[]::new);
     }
 
