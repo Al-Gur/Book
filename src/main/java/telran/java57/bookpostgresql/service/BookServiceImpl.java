@@ -26,30 +26,15 @@ public class BookServiceImpl implements BookService {
     final PublisherRepository publisherRepository;
     final ModelMapper modelMapper;
 
-    String teeest(){
-        System.out.println("2222");
-        return null;
-    }
-
-    Author convertMy(AuthorDto authorDto){
-                                Author author;
+    Author convertMy(AuthorDto authorDto) {
+        Author author;
         Optional<Author> author0 = authorRepository.findById(authorDto.getName());
-
-        if (author0.isEmpty()){
-            author=authorRepository.save(modelMapper.map(authorDto, Author.class));
+        if (author0.isEmpty()) {
+            author = authorRepository.save(modelMapper.map(authorDto, Author.class));
+        } else {
+            author = author0.get();
         }
-        else {
-            author=author0.get();
-        }
-        String b ="ww";
-        String a = Optional.ofNullable(b).orElse(teeest());
-
         return author;
-
-//        return
-//                authorRepository.findById(authorDto.getName())
-//                        .orElse(authorRepository.save(modelMapper.map(authorDto, Author.class)));
-
     }
 
     @Transactional
@@ -61,34 +46,19 @@ public class BookServiceImpl implements BookService {
         //Publisher
         Publisher publisher;
         Optional<Publisher> publisher0 = publisherRepository.findById(bookDto.getPublisher());
-        if (publisher0.isEmpty()){
-            publisher=publisherRepository.save(new Publisher(bookDto.getPublisher()));
-        }
-        else {
-            publisher=publisher0.get();
+        if (publisher0.isEmpty()) {
+            publisher = publisherRepository.save(new Publisher(bookDto.getPublisher()));
+        } else {
+            publisher = publisher0.get();
         }
 
         //Publisher publisher = publisherRepository.findById(bookDto.getPublisher())
-          //      .orElse(publisherRepository.save(new Publisher(bookDto.getPublisher())));
+        //      .orElse(publisherRepository.save(new Publisher(bookDto.getPublisher())));
         //Author
         Set<Author> authors = bookDto.getAuthors().stream()
                 .map(this::convertMy)
-                //{
- //                   AuthorDto authorDto1 = (AuthorDto) authorDto;
-//                        Author author;
-//        Optional<Author> author0 = authorRepository.findById(authorDto.getName());
-//        if (author0.isEmpty()){
-//            author=authorRepository.save(modelMapper.map(authorDto, Author.class));
-//        }
-//        else {
-//            author=author0.get();
-//        }
-//        return author;
-                //    return
 //                authorRepository.findById(authorDto.getName())
 //                            .orElse(authorRepository.save(modelMapper.map(authorDto, Author.class))))
-//
-//                }
                 .collect(Collectors.toSet());
         //Book
         Book book = new Book(bookDto.getIsbn(), bookDto.getTitle(), authors, publisher);
@@ -140,7 +110,7 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
 
         return book.getAuthors().stream()
-                .map(a -> modelMapper.map(a,AuthorDto.class)).toList();
+                .map(a -> modelMapper.map(a, AuthorDto.class)).toList();
     }
 
     @Transactional(readOnly = true)
@@ -156,6 +126,6 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(EntityNotFoundException::new);
 //        bookRepository.deleteByAuthorsName(authorName);
         authorRepository.deleteById(authorName);
-        return modelMapper.map(author,AuthorDto.class);
+        return modelMapper.map(author, AuthorDto.class);
     }
 }
