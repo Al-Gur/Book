@@ -20,7 +20,9 @@ public class BookRepositoryImpl implements BookRepository{
     @Override
     //@Query("select b from ")
     public Stream<Book> findBookByAuthorsName(String name) {
-        return Stream.empty();
+        return em.createQuery("select b from Book b join b.authors a where a.name = \""
+                        + name+"\"")
+                .getResultStream();
     }
 
     @Override
