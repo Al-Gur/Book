@@ -27,14 +27,10 @@ public class BookServiceImpl implements BookService {
     final ModelMapper modelMapper;
 
     Author convertMy(AuthorDto authorDto) {
-        Author author;
-        Optional<Author> author0 = authorRepository.findById(authorDto.getName());
-        if (author0.isEmpty()) {
-            author = authorRepository.save(modelMapper.map(authorDto, Author.class));
-        } else {
-            author = author0.get();
-        }
-        return author;
+        Optional<Author> author = authorRepository.findById(authorDto.getName());
+        return author.isPresent() ?
+                author.get() :
+                authorRepository.save(modelMapper.map(authorDto, Author.class));
     }
 
     @Transactional
@@ -43,14 +39,12 @@ public class BookServiceImpl implements BookService {
         if (bookRepository.existsById(bookDto.getIsbn())) {
             return false;
         }
+
         //Publisher
-        Publisher publisher;
-        Optional<Publisher> publisher0 = publisherRepository.findById(bookDto.getPublisher());
-        if (publisher0.isEmpty()) {
-            publisher = publisherRepository.save(new Publisher(bookDto.getPublisher()));
-        } else {
-            publisher = publisher0.get();
-        }
+        Optional<Publisher> publisherOptional = publisherRepository.findById(bookDto.getPublisher());
+        Publisher publisher = publisherOptional.isPresent() ?
+                publisherOptional.get() :
+                publisherRepository.save(new Publisher(bookDto.getPublisher()));
 
         //Publisher publisher = publisherRepository.findById(bookDto.getPublisher())
         //      .orElse(publisherRepository.save(new Publisher(bookDto.getPublisher())));
@@ -61,6 +55,7 @@ public class BookServiceImpl implements BookService {
 //                authorRepository.findById(authorDto.getName())
 //                            .orElse(authorRepository.save(modelMapper.map(authorDto, Author.class))))
                 .collect(Collectors.toSet());
+
         //Book
         Book book = new Book(bookDto.getIsbn(), bookDto.getTitle(), authors, publisher);
         bookRepository.save(book);

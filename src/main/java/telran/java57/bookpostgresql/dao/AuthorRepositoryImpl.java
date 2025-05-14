@@ -8,14 +8,14 @@ import telran.java57.bookpostgresql.model.Author;
 import java.util.Optional;
 
 @Repository
-public class AuthorRepositoryImpl implements AuthorRepository{
+public class AuthorRepositoryImpl implements AuthorRepository {
 
     @PersistenceContext
     EntityManager em;
 
     @Override
     public Optional<Author> findById(String name) {
-        return Optional.ofNullable(em.find(Author.class,name));
+        return Optional.ofNullable(em.find(Author.class, name));
     }
 
     @Override
@@ -26,8 +26,8 @@ public class AuthorRepositoryImpl implements AuthorRepository{
 
     @Override
     public void deleteById(String authorName) {
-        Author author = em.find(Author.class,authorName);
-        if (author != null){
+        Author author = em.find(Author.class, authorName);
+        if (author != null) {
             em.remove(author);
         }
     }
