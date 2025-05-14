@@ -37,6 +37,7 @@ public class BookRepositoryImpl implements BookRepository {
 
     @Override
     public Book save(Book book) {
+        deleteById(book.getIsbn());
         em.persist(book);
         return book;
     }

@@ -64,6 +64,7 @@ public class BookServiceImpl implements BookService {
         return modelMapper.map(book, BookDto.class);
     }
 
+    @Transactional
     @Override
     public BookDto updateTitleForBook(String isbn, String title) {
         Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
