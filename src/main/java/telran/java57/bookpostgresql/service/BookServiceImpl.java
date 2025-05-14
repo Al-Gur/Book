@@ -1,6 +1,5 @@
 package telran.java57.bookpostgresql.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -8,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import telran.java57.bookpostgresql.dao.AuthorRepository;
 import telran.java57.bookpostgresql.dao.BookRepository;
 import telran.java57.bookpostgresql.dao.PublisherRepository;
+import telran.java57.bookpostgresql.dao.exception.NotFoundException;
 import telran.java57.bookpostgresql.dto.AuthorDto;
 import telran.java57.bookpostgresql.dto.BookDto;
 import telran.java57.bookpostgresql.model.Author;
@@ -34,13 +34,13 @@ public class BookServiceImpl implements BookService {
 
         //Publisher
         Publisher publisher = publisherRepository.findById(bookDto.getPublisher())
-             .orElseGet(() -> publisherRepository.save(new Publisher(bookDto.getPublisher())));
+                .orElseGet(() -> publisherRepository.save(new Publisher(bookDto.getPublisher())));
 
         //Author
         Set<Author> authors = bookDto.getAuthors().stream()
                 .map(authorDto ->
                         authorRepository.findById(authorDto.getName())
-                        .orElseGet(() -> authorRepository.save(modelMapper.map(authorDto, Author.class))))
+                                .orElseGet(() -> authorRepository.save(modelMapper.map(authorDto, Author.class))))
                 .collect(Collectors.toSet());
 
         //Book
@@ -52,21 +52,21 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public BookDto findBookByIsbn(String isbn) {
-        Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
+        Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
         return modelMapper.map(book, BookDto.class);
     }
 
     @Transactional
     @Override
     public BookDto removeBookByIsbn(String isbn) {
-        Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
+        Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
         bookRepository.deleteById(book.getIsbn());
         return modelMapper.map(book, BookDto.class);
     }
 
     @Override
     public BookDto updateTitleForBook(String isbn, String title) {
-        Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
+        Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
         book.setTitle(title);
         return modelMapper.map(bookRepository.save(book), BookDto.class);
     }
@@ -90,7 +90,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Iterable<AuthorDto> findBookAuthors(String isbn) {
-        Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
+        Book book = bookRepository.findById(isbn).orElseThrow(NotFoundException::new);
 
         return book.getAuthors().stream()
                 .map(a -> modelMapper.map(a, AuthorDto.class)).toList();
@@ -106,7 +106,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public AuthorDto removeAuthor(String authorName) {
         Author author = authorRepository.findById(authorName)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(NotFoundException::new);
 //        bookRepository.deleteByAuthorsName(authorName);
         authorRepository.deleteById(authorName);
         return modelMapper.map(author, AuthorDto.class);
