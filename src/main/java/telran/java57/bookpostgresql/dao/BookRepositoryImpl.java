@@ -3,6 +3,7 @@ package telran.java57.bookpostgresql.dao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
+import telran.java57.bookpostgresql.model.Author;
 import telran.java57.bookpostgresql.model.Book;
 
 import java.util.Optional;
@@ -46,6 +47,9 @@ public class BookRepositoryImpl implements BookRepository{
 
     @Override
     public void deleteById(String isbn) {
-
+        Book book = em.find(Book.class,isbn);
+        if (book != null){
+            em.remove(book);
+        }
     }
 }
