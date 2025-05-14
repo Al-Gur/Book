@@ -14,7 +14,6 @@ import telran.java57.bookpostgresql.model.Author;
 import telran.java57.bookpostgresql.model.Book;
 import telran.java57.bookpostgresql.model.Publisher;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
