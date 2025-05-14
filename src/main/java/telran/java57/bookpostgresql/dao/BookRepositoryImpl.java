@@ -16,8 +16,6 @@ import java.util.stream.Stream;
 public class BookRepositoryImpl implements BookRepository{
     @PersistenceContext
     EntityManager em;
-    @Autowired
-    JdbcTemplate jdbcTemplate;
 
     @Override
     //@Query("select b from ")
@@ -27,10 +25,8 @@ public class BookRepositoryImpl implements BookRepository{
 
     @Override
     public Stream<Book> findBookByPublisherPublisherName(String publisher) {
-        return jdbcTemplate.query("select b.isbn from Book b where b.publisher_publisher_name = ?",
-                (rs, rowNum)-> this.findById(rs.getString("isbn")).get(),
-                        publisher)
-                .stream();
+        return em.createQuery("select b from Book b where b.publisher.publisherName = \"" + publisher+"\"")
+                .getResultStream();
     }
 
     @Override
