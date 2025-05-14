@@ -26,13 +26,6 @@ public class BookServiceImpl implements BookService {
     final PublisherRepository publisherRepository;
     final ModelMapper modelMapper;
 
-    Author convertMy(AuthorDto authorDto) {
-        Optional<Author> author = authorRepository.findById(authorDto.getName());
-        return author.isPresent() ?
-                author.get() :
-                authorRepository.save(modelMapper.map(authorDto, Author.class));
-    }
-
     @Transactional
     @Override
     public Boolean addBook(BookDto bookDto) {
@@ -41,19 +34,14 @@ public class BookServiceImpl implements BookService {
         }
 
         //Publisher
-        Optional<Publisher> publisherOptional = publisherRepository.findById(bookDto.getPublisher());
-        Publisher publisher = publisherOptional.isPresent() ?
-                publisherOptional.get() :
-                publisherRepository.save(new Publisher(bookDto.getPublisher()));
-
-        //Publisher publisher = publisherRepository.findById(bookDto.getPublisher())
-        //      .orElse(publisherRepository.save(new Publisher(bookDto.getPublisher())));
+        Publisher publisher = publisherRepository.findById(bookDto.getPublisher())
+             .orElseGet(() -> publisherRepository.save(new Publisher(bookDto.getPublisher())));
 
         //Author
         Set<Author> authors = bookDto.getAuthors().stream()
-                .map(this::convertMy)
-//                authorRepository.findById(authorDto.getName())
-//                            .orElse(authorRepository.save(modelMapper.map(authorDto, Author.class))))
+                .map(authorDto ->
+                        authorRepository.findById(authorDto.getName())
+                        .orElseGet(() -> authorRepository.save(modelMapper.map(authorDto, Author.class))))
                 .collect(Collectors.toSet());
 
         //Book
