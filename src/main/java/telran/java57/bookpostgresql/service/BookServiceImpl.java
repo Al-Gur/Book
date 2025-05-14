@@ -54,6 +54,7 @@ public class BookServiceImpl implements BookService {
 
         //Publisher publisher = publisherRepository.findById(bookDto.getPublisher())
         //      .orElse(publisherRepository.save(new Publisher(bookDto.getPublisher())));
+
         //Author
         Set<Author> authors = bookDto.getAuthors().stream()
                 .map(this::convertMy)
